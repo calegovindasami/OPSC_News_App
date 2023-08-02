@@ -1,6 +1,5 @@
 package com.example.opsc_news_app.Services
 
-import android.database.Observable
 import com.example.opsc_news_app.models.WeatherModel
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -11,8 +10,8 @@ import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 
 interface IWeather {
-    @GET("/onecall")
-    fun getWeather(@Query("lat") latitude: Double, @Query("lon") longitude: Double, @Query("appid") apiKey: String): io.reactivex.Observable<WeatherModel>
+    @GET("weather")
+    fun getWeather(@Query("lat") latitude: Double, @Query("lon") longitude: Double, @Query("appid") apiKey: String, @Query("units") units: String): io.reactivex.Observable<WeatherModel>
 }
 
 class WeatherBuilder {
@@ -23,7 +22,7 @@ class WeatherBuilder {
             .readTimeout(2, TimeUnit.MINUTES)
             .build()
         private val retrofit = Retrofit.Builder()
-            .baseUrl("")
+            .baseUrl("https://api.openweathermap.org/data/2.5/")
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)

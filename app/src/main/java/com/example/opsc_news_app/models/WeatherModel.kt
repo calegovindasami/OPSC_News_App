@@ -1,47 +1,63 @@
 package com.example.opsc_news_app.models
 
 data class WeatherModel(
-    val alerts: List<Alert> = listOf(),
-    val current: Current = Current(),
-    val daily: List<Any> = listOf(),
-    val hourly: List<Any> = listOf(),
-    val lat: Double = 0.0,
-    val lon: Double = 0.0,
-    val minutely: List<Any> = listOf(),
-    val timezone: String = "",
-    val timezone_offset: Int = 0
+    val base: String = "",
+    val clouds: Clouds = Clouds(),
+    val cod: Int = 0,
+    val coord: Coord = Coord(),
+    val dt: Int = 0,
+    val id: Int = 0,
+    val main: Main = Main(),
+    val name: String = "",
+    val rain: Rain = Rain(),
+    val sys: Sys = Sys(),
+    val timezone: Int = 0,
+    val visibility: Int = 0,
+    val weather: List<Weather> = listOf(),
+    val wind: Wind = Wind()
 ) {
-    data class Alert(
-        val description: String = "",
-        val end: Int = 0,
-        val event: String = "",
-        val sender_name: String = "",
-        val start: Int = 0,
-        val tags: List<Any> = listOf()
+    data class Clouds(
+        val all: Int = 0
     )
 
-    data class Current(
-        val clouds: Int = 0,
-        val dew_point: Double = 0.0,
-        val dt: Int = 0,
+    data class Coord(
+        val lat: Double = 0.0,
+        val lon: Double = 0.0
+    )
+
+    data class Main(
         val feels_like: Double = 0.0,
+        val grnd_level: Int = 0,
         val humidity: Int = 0,
         val pressure: Int = 0,
+        val sea_level: Int = 0,
+        val temp: Double = 0.0,
+        val temp_max: Double = 0.0,
+        val temp_min: Double = 0.0
+    )
+
+    data class Rain(
+        val `1h`: Double = 0.0
+    )
+
+    data class Sys(
+        val country: String = "",
+        val id: Int = 0,
         val sunrise: Int = 0,
         val sunset: Int = 0,
-        val temp: Double = 0.0,
-        val uvi: Double = 0.0,
-        val visibility: Int = 0,
-        val weather: List<Weather> = listOf(),
-        val wind_deg: Int = 0,
-        val wind_gust: Double = 0.0,
-        val wind_speed: Double = 0.0
-    ) {
-        data class Weather(
-            val description: String = "",
-            val icon: String = "",
-            val id: Int = 0,
-            val main: String = ""
-        )
-    }
+        val type: Int = 0
+    )
+
+    data class Weather(
+        val description: String = "",
+        val icon: String = "",
+        val id: Int = 0,
+        val main: String = ""
+    )
+
+    data class Wind(
+        val deg: Int = 0,
+        val gust: Double = 0.0,
+        val speed: Double = 0.0
+    )
 }

@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -58,20 +57,14 @@ class Weather : Fragment() {
         val view = inflater.inflate(R.layout.fragment_weather, container, false)
         locationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        getUserCords()
-        val compositeDisposable = CompositeDisposable()
-        compositeDisposable.add(
-            WeatherBuilder.buildService().getWeather(latitude!!, longitude!!, WEATHER_API_KEY)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeOn(Schedulers.io())
-            .subscribe({response -> onSuccess(view, response)}, {t -> onFailure(t)})
-        )
+        getUserCords(view)
+
         return view
     }
 
     private fun onSuccess(view: View, weather: WeatherModel) {
         val txtTemperature = view.findViewById<TextView>(R.id.txtTemperature)
-        txtTemperature.text = weather.current.temp.toString()
+        txtTemperature.text = weather.main.temp.toString() + "°C"
     }
 
     private fun onFailure(t: Throwable) {
@@ -79,7 +72,7 @@ class Weather : Fragment() {
         Log.e("Weather Service", t.message.toString())
     }
 
-    private fun getUserCords() {
+    private fun getUserCords(view: View) {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -91,28 +84,32 @@ class Weather : Fragment() {
             requestPermissions()
         }
         locationClient.lastLocation
-            .addOnSuccessListener {
-                location: Location? ->
-                if (location != null) {
-                    latitude = location.latitude
-                    longitude = location.longitude
-                }
+            .addOnCompleteListener { location ->
+                    latitude = location.result.latitude
+                    longitude = location.result.longitude
+
+                val compositeDisposable = CompositeDisposable()
+                compositeDisposable.add(
+                    WeatherBuilder.buildService().getWeather(latitude!!, longitude!!, WEATHER_API_KEY, "metric")
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe({response -> onSuccess(view, response)}, {t -> onFailure(t)}))
             }
     }
 
-    companion object {
-        lateinit var context: Context
-        lateinit var activity: Activity
-         fun requestPermissions() {
-            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity,
-                    arrayOf(
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ), 1)
-            }
+    fun requestPermissions() {
+        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ), 1)
         }
+    }
+
+    companion object {
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
