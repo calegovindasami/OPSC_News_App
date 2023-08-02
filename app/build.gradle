@@ -58,4 +58,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
+    //Loads image from url
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
+
 }

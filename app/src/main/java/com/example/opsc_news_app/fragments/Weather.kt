@@ -1,18 +1,19 @@
 package com.example.opsc_news_app.fragments
 
 import android.Manifest
-import android.app.Activity
-import android.content.Context
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import com.bumptech.glide.Glide
 import com.example.opsc_news_app.R
 import com.example.opsc_news_app.Services.WeatherBuilder
 import com.example.opsc_news_app.models.WeatherModel
@@ -65,6 +66,13 @@ class Weather : Fragment() {
     private fun onSuccess(view: View, weather: WeatherModel) {
         val txtTemperature = view.findViewById<TextView>(R.id.txtTemperature)
         txtTemperature.text = weather.main.temp.toString() + "°C"
+
+        val iconCode = weather.weather[0].icon
+        val imgUri = "https://openweathermap.org/img/wn/${iconCode}@2x.png"
+        val imgView = view.findViewById<ImageView>(R.id.imgWeather)
+        imgView.setImageURI(Uri.parse(imgUri))
+        Glide.with(requireContext()).load(Uri.parse(imgUri)).into(imgView)
+
     }
 
     private fun onFailure(t: Throwable) {
